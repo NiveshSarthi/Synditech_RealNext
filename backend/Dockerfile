@@ -5,7 +5,8 @@ COPY package*.json ./
 
 # Dependencies stage
 FROM base AS deps
-RUN npm install --frozen-lockfile
+# Use npm ci for faster, more reliable builds in CI/Docker
+RUN npm ci
 
 # Final runner stage
 FROM node:20-alpine AS runner

@@ -52,7 +52,7 @@ class AuthService {
         await this.logLogin(user.id, 'password', true, req);
         await logAuthEvent(req, 'login', true, user.id);
 
-        return {
+        const responseData = {
             user: user.toSafeJSON(),
             token: accessToken,
             refresh_token: refreshToken,
@@ -66,6 +66,9 @@ class AuthService {
                 } : null
             }
         };
+
+        logger.debug(`Login successful for ${email}. Context populated: ${!!context.tenant}`);
+        return responseData;
     }
 
     /**
@@ -239,60 +242,74 @@ class AuthService {
      * Get user context (tenant, partner, subscription)
      */
     async getUserContext(user) {
-        const context = {};
+        try {
+            const context = {};
+            logger.debug(`Getting context for user: ${user.email} (id: ${user.id})`);
 
-        // Get tenant membership (prefer owner)
-        const tenantUser = await TenantUser.findOne({
-            where: { user_id: user.id },
-            include: [{ model: Tenant, as: 'Tenant', where: { status: 'active' } }],
-            order: [['is_owner', 'DESC']]
-        });
-
-        if (tenantUser?.Tenant) {
-            context.tenant = tenantUser.Tenant.get({ plain: true });
-            context.tenantRole = tenantUser.role;
-
-            // Get subscription
-            const subscription = await Subscription.findOne({
-                where: {
-                    tenant_id: tenantUser.Tenant.id,
-                    status: ['trial', 'active']
-                },
-                include: [{
-                    model: Plan,
-                    as: 'plan',
-                    include: [{
-                        model: PlanFeature,
-                        as: 'planFeatures',
-                        where: { is_enabled: true },
-                        required: false,
-                        include: [{ model: Feature }]
-                    }]
-                }],
-                order: [['created_at', 'DESC']]
+            // Get tenant membership (prefer owner)
+            const tenantUser = await TenantUser.findOne({
+                where: { user_id: user.id },
+                include: [{ model: Tenant, as: 'Tenant', where: { status: 'active' } }],
+                order: [['is_owner', 'DESC']]
             });
 
-            if (subscription) {
-                context.subscription = subscription.get({ plain: true });
-                context.planCode = subscription.plan?.code;
-                context.features = subscription.plan?.planFeatures
-                    ?.filter(pf => pf.Feature?.is_enabled)
-                    .map(pf => pf.Feature.code) || [];
+            if (tenantUser?.Tenant) {
+                logger.debug(`Found tenant: ${tenantUser.Tenant.name} (${tenantUser.Tenant.id})`);
+                context.tenant = tenantUser.Tenant.get({ plain: true });
+                context.tenantRole = tenantUser.role;
+
+                // Get subscription
+                const subscription = await Subscription.findOne({
+                    where: {
+                        tenant_id: tenantUser.Tenant.id,
+                        status: ['trial', 'active']
+                    },
+                    include: [{
+                        model: Plan,
+                        as: 'plan',
+                        include: [{
+                            model: PlanFeature,
+                            as: 'planFeatures',
+                            where: { is_enabled: true },
+                            required: false,
+                            include: [{ model: Feature }]
+                        }]
+                    }],
+                    order: [['created_at', 'DESC']]
+                });
+
+                if (subscription) {
+                    logger.debug(`Found subscription: ${subscription.id} (Plan: ${subscription.plan?.name})`);
+                    context.subscription = subscription.get({ plain: true });
+                    context.planCode = subscription.plan?.code;
+                    context.features = subscription.plan?.planFeatures
+                        ?.filter(pf => pf.Feature?.is_enabled)
+                        .map(pf => pf.Feature.code) || [];
+                } else {
+                    logger.debug('No active subscription found for tenant');
+                }
+            } else {
+                logger.debug('No active tenant membership found');
             }
+
+            // Get partner membership
+            const partnerUser = await PartnerUser.findOne({
+                where: { user_id: user.id },
+                include: [{ model: Partner, where: { status: 'active' } }]
+            });
+
+            if (partnerUser?.Partner) {
+                logger.debug(`Found partner: ${partnerUser.Partner.name} (${partnerUser.Partner.id})`);
+                context.partner = partnerUser.Partner.get({ plain: true });
+                context.partnerRole = partnerUser.role;
+            }
+
+            return context;
+        } catch (error) {
+            logger.error(`Error in getUserContext for user ${user.id}:`, error);
+            // Don't swallow the error, throw it so login fails with 500 instead of returning partial context
+            throw error;
         }
-
-        // Get partner membership
-        const partnerUser = await PartnerUser.findOne({
-            where: { user_id: user.id },
-            include: [{ model: Partner, where: { status: 'active' } }]
-        });
-
-        if (partnerUser?.Partner) {
-            context.partner = partnerUser.Partner.get({ plain: true });
-            context.partnerRole = partnerUser.role;
-        }
-
-        return context;
     }
 
     /**

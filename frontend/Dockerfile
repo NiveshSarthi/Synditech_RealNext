@@ -7,11 +7,11 @@ RUN npm install
 
 # Stage 2: builder
 FROM node:20-alpine AS builder
+ARG NEXT_PUBLIC_API_URL
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-# Add environment variables here if they are needed at build time
-# ENV NEXT_PUBLIC_API_URL=...
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 RUN npm run build
 
 # Stage 3: runner
