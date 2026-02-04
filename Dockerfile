@@ -32,7 +32,7 @@ RUN npm run build
 # --- Frontend Runner ---
 FROM node:20-alpine AS frontend
 WORKDIR /app
-ENV NODE_ENV production
+ENV NODE_ENV=production
 RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs
 COPY --from=frontend-builder /app/public ./public
