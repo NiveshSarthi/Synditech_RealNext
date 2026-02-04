@@ -5,8 +5,8 @@ COPY package*.json ./
 
 # Dependencies stage
 FROM base AS deps
-# Use npm ci for faster, more reliable builds in CI/Docker
-RUN npm ci
+# Use npm install instead of ci for better resilience if lockfile is missing
+RUN npm install
 
 # Final runner stage
 FROM node:20-alpine AS runner
