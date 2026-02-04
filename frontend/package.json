@@ -37,10 +37,9 @@
     "recharts": "^2.8.0",
     "tailwind-merge": "^2.0.0",
     "tailwindcss": "^3.3.0",
-    "typescript": "^5"
-  },
-  "devDependencies": {
+    "typescript": "^5",
     "@tailwindcss/forms": "^0.5.7",
     "@tailwindcss/typography": "^0.5.10"
-  }
+  },
+  "devDependencies": {}
 }

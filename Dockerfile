@@ -20,6 +20,9 @@ CMD ["node", "server.js"]
 # --- Frontend Builder ---
 FROM base AS frontend-builder
 COPY frontend/package*.json ./
+# Use production environment
+ENV NODE_ENV=production
+# Note: Since we moved tailwind plugins to dependencies, we can use npm install safely
 RUN npm install
 ARG NEXT_PUBLIC_API_URL
 COPY frontend/ .
