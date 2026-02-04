@@ -50,11 +50,24 @@ app.get('/health', (req, res) => {
   });
 });
 
+const path = require('path');
+
+// Serve static files from the React frontend app
+app.use(express.static(path.join(__dirname, 'public')));
+
 // API Routes - using the centralized routes index
 app.use('/api', require('./routes'));
 
 // 404 handler
-app.use((req, res) => {
+app.use((req, res, next) => {
+  // If the request accepts html, it's likely a navigation request
+  // so we serve index.html for the SPA
+  if (req.accepts('html')) {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    return;
+  }
+  
+  // Otherwise, if it's an API request or asset that wasn't found
   res.status(404).json({
     success: false,
     error: 'Endpoint not found',
@@ -66,7 +79,7 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 // Start server
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 5001;
 
 const startServer = async () => {
   try {

@@ -1,3 +1,4 @@
+require('dotenv').config();
 const { Plan, Feature, PlanFeature, sequelize } = require('../models');
 const logger = require('../config/logger');
 
@@ -34,7 +35,7 @@ async function seedPlans() {
         const plansData = [
             {
                 name: 'Free Trial',
-                code: 'trial',
+                code: 'free_trial',
                 description: '14-day full access trial',
                 price_monthly: 0,
                 price_yearly: 0,
@@ -87,7 +88,7 @@ async function seedPlans() {
             if (created) {
                 // Assign features to plan
                 // Trial: All features
-                if (p.code === 'trial') {
+                if (p.code === 'free_trial') {
                     for (const f of features) {
                         await PlanFeature.create({ plan_id: plan.id, feature_id: f.id, is_enabled: true });
                     }

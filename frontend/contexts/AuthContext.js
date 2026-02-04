@@ -35,7 +35,12 @@ export function AuthProvider({ children, router }) {
             setTimeout(() => reject(new Error('Auth check timeout')), 10000)
           )
         ]);
-        setUser(response.data); // V1 usually returns user directly or in a specific field
+        const userData = response.data.data?.user || response.data;
+        const contextData = response.data.data?.context || {};
+        
+        const fullUser = { ...userData, context: contextData };
+        setUser(fullUser);
+        localStorage.setItem('user', JSON.stringify(fullUser)); // Update local storage with fresh data
       }
     } catch (error) {
       console.error('Auth verification failed:', error.message);
@@ -74,6 +79,11 @@ export function AuthProvider({ children, router }) {
         // Fetch profile if user info not in login response
         const profileRes = await authAPI.getProfile();
         finalUser = profileRes.data.data?.user || profileRes.data; // Handle various response structures
+      } else {
+          // Verify we have context if it was returned
+          if (response.data.data.context) {
+              finalUser = { ...finalUser, context: response.data.data.context };
+          }
       }
 
       localStorage.setItem('user', JSON.stringify(finalUser));

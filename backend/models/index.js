@@ -26,6 +26,8 @@ const EnvironmentFlag = require('./EnvironmentFlag');
 const BrandingSetting = require('./BrandingSetting');
 const RefreshToken = require('./RefreshToken');
 const LoginHistory = require('./LoginHistory');
+const Role = require('./Role');
+const Permission = require('./Permission');
 
 // =====================
 // PARTNER ASSOCIATIONS
@@ -37,7 +39,7 @@ Tenant.belongsTo(Partner, { foreignKey: 'partner_id', as: 'partner' });
 
 // Partner has many PartnerUsers (team members)
 Partner.hasMany(PartnerUser, { foreignKey: 'partner_id', as: 'partnerUsers' });
-PartnerUser.belongsTo(Partner, { foreignKey: 'partner_id' });
+PartnerUser.belongsTo(Partner, { foreignKey: 'partner_id', as: 'Partner' });
 
 // Partner has many allowed plans
 Partner.hasMany(PartnerAllowedPlan, { foreignKey: 'partner_id', as: 'partnerPlans' });
@@ -70,6 +72,14 @@ LoginHistory.belongsTo(User, { foreignKey: 'user_id' });
 // Tenant has many TenantUsers (team members)
 Tenant.hasMany(TenantUser, { foreignKey: 'tenant_id', as: 'tenantUsers' });
 TenantUser.belongsTo(Tenant, { foreignKey: 'tenant_id', as: 'Tenant' });
+
+// Tenant has many Roles
+Tenant.hasMany(Role, { foreignKey: 'tenant_id', as: 'roles' });
+Role.belongsTo(Tenant, { foreignKey: 'tenant_id', as: 'tenant' });
+
+// TenantUser has a Role
+TenantUser.belongsTo(Role, { foreignKey: 'role_id', as: 'customRole' });
+Role.hasMany(TenantUser, { foreignKey: 'role_id', as: 'users' });
 
 // Tenant has many Subscriptions
 Tenant.hasMany(Subscription, { foreignKey: 'tenant_id', as: 'subscriptions' });
@@ -256,5 +266,7 @@ module.exports = {
     EnvironmentFlag,
     BrandingSetting,
     RefreshToken,
-    LoginHistory
+    LoginHistory,
+    Role,
+    Permission
 };

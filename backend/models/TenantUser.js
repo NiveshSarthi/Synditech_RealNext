@@ -23,9 +23,19 @@ const TenantUser = sequelize.define('tenant_users', {
             key: 'id'
         }
     },
+    role_id: {
+        type: DataTypes.UUID,
+        allowNull: true,
+        references: {
+            model: 'roles',
+            key: 'id'
+        },
+        comment: 'Custom role assignment (overrides legacy role field)'
+    },
     role: {
         type: DataTypes.STRING(50),
         defaultValue: 'user',
+        comment: 'Legacy role field, use role_id instead',
         validate: {
             isIn: [['admin', 'manager', 'user']]
         }

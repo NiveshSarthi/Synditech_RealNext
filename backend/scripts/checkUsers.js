@@ -11,7 +11,7 @@ async function checkUsers() {
                 {
                     model: db.TenantUser,
                     as: 'tenantMemberships',
-                    include: [{ model: db.Tenant, as: 'tenant' }]
+                    include: [{ model: db.Tenant, as: 'Tenant' }]
                 },
                 {
                     model: db.PartnerUser,
@@ -32,7 +32,7 @@ async function checkUsers() {
             if (user.tenantMemberships && user.tenantMemberships.length > 0) {
                 console.log('Tenant Access:');
                 user.tenantMemberships.forEach(tm => {
-                    console.log(`  - ${tm.tenant?.name} (${tm.role})`);
+                    console.log(`  - ${tm.Tenant?.name} (${tm.role})`);
                 });
             }
 

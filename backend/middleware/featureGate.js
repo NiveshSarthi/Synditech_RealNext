@@ -13,29 +13,33 @@ const logger = require('../config/logger');
  */
 const requireFeature = (featureCode) => {
     return async (req, res, next) => {
-        // Super admins bypass feature checks
-        if (req.user?.is_super_admin) {
-            return next();
+        try {
+            // Super admins bypass feature checks
+            if (req.user?.is_super_admin) {
+                return next();
+            }
+
+            // Check if feature is globally disabled
+            const feature = await Feature.findOne({ where: { code: featureCode } });
+            if (!feature || !feature.is_enabled) {
+                throw ApiError.forbidden(`Feature '${featureCode}' is currently unavailable`);
+            }
+
+            // Check if tenant has this feature in their plan
+            if (!req.features || !req.features[featureCode]) {
+                throw ApiError.forbidden(`Your subscription does not include access to '${featureCode}'`);
+            }
+
+            // Attach feature limits for use in controller
+            req.currentFeature = {
+                code: featureCode,
+                limits: req.featureLimits[featureCode] || {}
+            };
+
+            next();
+        } catch (error) {
+            next(error);
         }
-
-        // Check if feature is globally disabled
-        const feature = await Feature.findOne({ where: { code: featureCode } });
-        if (!feature || !feature.is_enabled) {
-            throw ApiError.forbidden(`Feature '${featureCode}' is currently unavailable`);
-        }
-
-        // Check if tenant has this feature in their plan
-        if (!req.features || !req.features[featureCode]) {
-            throw ApiError.forbidden(`Your subscription does not include access to '${featureCode}'`);
-        }
-
-        // Attach feature limits for use in controller
-        req.currentFeature = {
-            code: featureCode,
-            limits: req.featureLimits[featureCode] || {}
-        };
-
-        next();
     };
 };
 
@@ -44,56 +48,60 @@ const requireFeature = (featureCode) => {
  */
 const checkUsageLimit = (featureCode, limitKey) => {
     return async (req, res, next) => {
-        // Super admins bypass limits
-        if (req.user?.is_super_admin) {
-            return next();
-        }
-
-        if (!req.subscription) {
-            throw ApiError.forbidden('No active subscription');
-        }
-
-        const limits = req.featureLimits[featureCode] || {};
-        const maxLimit = limits[limitKey];
-
-        // If no limit is set, allow unlimited
-        if (maxLimit === undefined || maxLimit === null || maxLimit === -1) {
-            return next();
-        }
-
-        // Get current period usage
-        const now = new Date();
-        const periodStart = new Date(req.subscription.current_period_start);
-        const periodEnd = new Date(req.subscription.current_period_end);
-
-        const usage = await SubscriptionUsage.findOne({
-            where: {
-                subscription_id: req.subscription.id,
-                feature_code: featureCode,
-                usage_period_start: { [Op.lte]: now },
-                usage_period_end: { [Op.gte]: now }
+        try {
+            // Super admins bypass limits
+            if (req.user?.is_super_admin) {
+                return next();
             }
-        });
 
-        const currentUsage = usage?.usage_count || 0;
+            if (!req.subscription) {
+                throw ApiError.forbidden('No active subscription');
+            }
 
-        if (currentUsage >= maxLimit) {
-            throw ApiError.forbidden(
-                `You have reached your ${limitKey.replace('max_', '').replace('_', ' ')} limit (${maxLimit}). ` +
-                `Please upgrade your plan for more.`
-            );
+            const limits = req.featureLimits[featureCode] || {};
+            const maxLimit = limits[limitKey];
+
+            // If no limit is set, allow unlimited
+            if (maxLimit === undefined || maxLimit === null || maxLimit === -1) {
+                return next();
+            }
+
+            // Get current period usage
+            const now = new Date();
+            const periodStart = new Date(req.subscription.current_period_start);
+            const periodEnd = new Date(req.subscription.current_period_end);
+
+            const usage = await SubscriptionUsage.findOne({
+                where: {
+                    subscription_id: req.subscription.id,
+                    feature_code: featureCode,
+                    usage_period_start: { [Op.lte]: now },
+                    usage_period_end: { [Op.gte]: now }
+                }
+            });
+
+            const currentUsage = usage?.usage_count || 0;
+
+            if (currentUsage >= maxLimit) {
+                throw ApiError.forbidden(
+                    `You have reached your ${limitKey.replace('max_', '').replace('_', ' ')} limit (${maxLimit}). ` +
+                    `Please upgrade your plan for more.`
+                );
+            }
+
+            // Attach usage info for controller
+            req.usageInfo = {
+                featureCode,
+                limitKey,
+                currentUsage,
+                maxLimit,
+                remaining: maxLimit - currentUsage
+            };
+
+            next();
+        } catch (error) {
+            next(error);
         }
-
-        // Attach usage info for controller
-        req.usageInfo = {
-            featureCode,
-            limitKey,
-            currentUsage,
-            maxLimit,
-            remaining: maxLimit - currentUsage
-        };
-
-        next();
     };
 };
 
