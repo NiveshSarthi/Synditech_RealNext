@@ -35,7 +35,9 @@ export function AuthProvider({ children, router }) {
             setTimeout(() => reject(new Error('Auth check timeout')), 10000)
           )
         ]);
-        setUser(response.data); // V1 usually returns user directly or in a specific field
+        // Backend returns: { success: true, data: { user, tenant, partner, ... } }
+        const userData = response.data.data?.user || response.data.data || response.data;
+        setUser(userData);
       }
     } catch (error) {
       console.error('Auth verification failed:', error.message);
@@ -64,7 +66,7 @@ export function AuthProvider({ children, router }) {
   const login = async (credentials) => {
     try {
       const response = await authAPI.login(credentials);
-      // Backend returns: { success: true, data: { user, token } }
+      // Backend returns: { success: true, data: { user, token, context } }
       const { user: initialUser, token } = response.data.data;
       let finalUser = initialUser;
 
@@ -73,7 +75,7 @@ export function AuthProvider({ children, router }) {
       if (!finalUser) {
         // Fetch profile if user info not in login response
         const profileRes = await authAPI.getProfile();
-        finalUser = profileRes.data.data?.user || profileRes.data; // Handle various response structures
+        finalUser = profileRes.data.data?.user || profileRes.data.data || profileRes.data;
       }
 
       localStorage.setItem('user', JSON.stringify(finalUser));

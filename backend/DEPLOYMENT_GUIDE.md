@@ -7,8 +7,8 @@ This guide covers deploying the Multi-Tenant SaaS backend to production.
 ## Prerequisites
 
 - Node.js 18+ LTS
-- PostgreSQL 14+ (managed service recommended)
-- Redis (for session management - optional but recommended)
+- PostgreSQL 14+ (or Docker)
+- Docker & Docker Compose (for containerized deployment)
 - Domain name with SSL certificate
 - Cloud hosting (AWS, GCP, Azure, DigitalOcean, etc.)
 
@@ -572,6 +572,39 @@ pm2 logs realnext-api --lines 100
 ```bash
 pm2 monit
 htop
+```
+
+---
+
+## 15. Docker Deployment (Recommended)
+
+The project is fully containerized using Docker and Docker Compose. This is the easiest way to deploy the entire stack.
+
+### 15.1 Prerequisites
+- Install [Docker](https://docs.docker.com/get-docker/)
+- Install [Docker Compose](https://docs.docker.com/compose/install/)
+
+### 15.2 Setup Environment
+The `docker-compose.yml` in the root directory uses environment variables for configuration. You should create a root `.env` file or rely on the defaults.
+
+### 15.3 Build and Run
+```bash
+# Build and start all services (db, backend, frontend)
+docker-compose up -d --build
+
+# View logs
+docker-compose logs -f
+```
+
+### 15.4 Services
+- **Frontend**: http://localhost:3000
+- **Backend API**: http://localhost:5000
+- **Database**: localhost:5432 (Internal to Docker: `db`)
+
+### 15.5 Running Migrations in Docker
+```bash
+docker-compose exec backend npm run migrate
+docker-compose exec backend node scripts/seedPlans.js
 ```
 
 ---

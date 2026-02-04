@@ -297,27 +297,35 @@ router.get('/:id/users', async (req, res, next) => {
  */
 router.post('/:id/users',
     [
-        validators.uuid('user_id', 'body'),
+        validators.email(),
+        validators.optionalString('name', 100),
         validators.enum('role', ['admin', 'manager', 'viewer']),
         validate
     ],
     auditAction('add_user', 'partner'),
     async (req, res, next) => {
         try {
-            const { user_id, role, is_owner } = req.body;
+            const { email, name, role, is_owner } = req.body;
 
             const partner = await Partner.findByPk(req.params.id);
             if (!partner) {
                 throw ApiError.notFound('Partner not found');
             }
 
-            const user = await User.findByPk(user_id);
+            // Find or create user
+            let user = await User.findOne({ where: { email } });
+
             if (!user) {
-                throw ApiError.notFound('User not found');
+                user = await User.create({
+                    email,
+                    name: name || email.split('@')[0],
+                    status: 'active',
+                    password_hash: 'temppassword123'
+                });
             }
 
             const [partnerUser, created] = await PartnerUser.findOrCreate({
-                where: { partner_id: req.params.id, user_id },
+                where: { partner_id: req.params.id, user_id: user.id },
                 defaults: { role, is_owner: is_owner || false }
             });
 

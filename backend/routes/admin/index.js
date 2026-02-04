@@ -7,6 +7,7 @@ router.use('/plans', require('./plans'));
 router.use('/features', require('./features'));
 router.use('/tenants', require('./tenants'));
 router.use('/analytics', require('./analytics'));
+router.use('/settings', require('./settings'));
 
 // Admin root - overview dashboard
 router.get('/', async (req, res) => {
@@ -18,7 +19,8 @@ router.get('/', async (req, res) => {
             '/api/admin/plans',
             '/api/admin/features',
             '/api/admin/tenants',
-            '/api/admin/analytics'
+            '/api/admin/analytics',
+            '/api/admin/settings'
         ]
     });
 });
