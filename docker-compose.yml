@@ -20,7 +20,8 @@ services:
   backend:
     build:
       context: .
-      dockerfile: backend.Dockerfile
+      dockerfile: Dockerfile
+      target: backend
     container_name: realnext-backend
     restart: always
     environment:
@@ -43,7 +44,8 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: frontend.Dockerfile
+      dockerfile: Dockerfile
+      target: frontend
       args:
         NEXT_PUBLIC_API_URL: http://realnex.niveshsarthi.com:5000
     container_name: realnext-frontend
