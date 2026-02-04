@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   db:
     image: postgres:14-alpine
@@ -21,8 +19,8 @@ services:
 
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend.Dockerfile
     container_name: realnext-backend
     restart: always
     environment:
@@ -44,8 +42,8 @@ services:
 
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: frontend.Dockerfile
       args:
         NEXT_PUBLIC_API_URL: http://realnex.niveshsarthi.com:5000
     container_name: realnext-frontend
