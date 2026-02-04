@@ -123,7 +123,9 @@ export function AuthProvider({ children, router }) {
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
     setUser(null);
-    Router.push('/');
+    if (typeof window !== 'undefined') {
+      Router.push('/');
+    }
   };
 
   const updateProfile = async (profileData) => {
@@ -150,7 +152,7 @@ export function AuthProvider({ children, router }) {
     register,
     logout,
     updateProfile,
-    router,
+    router: typeof window !== 'undefined' ? router : null,
     isAuthenticated: !!user
   };
 
