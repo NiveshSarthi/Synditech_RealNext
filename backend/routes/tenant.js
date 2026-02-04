@@ -137,7 +137,7 @@ router.post('/users',
                 user = await User.create({
                     email,
                     name: name || email.split('@')[0],
-                    status: 'pending',
+                    status: 'active',
                     // In production, generate temp password and send email
                     password_hash: 'temppassword123'
                 });
