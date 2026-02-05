@@ -15,7 +15,8 @@ import {
     CurrencyRupeeIcon,
     CalendarIcon,
     UserCircleIcon,
-    TagIcon
+    TagIcon,
+    BuildingOfficeIcon
 } from '@heroicons/react/24/outline';
 import { Button } from '../../components/ui/Button';
 

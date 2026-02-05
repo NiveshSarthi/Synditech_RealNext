@@ -184,16 +184,6 @@ export const contactsAPI = {
   }),
 };
 
-// Aliasing contactsAPI to leadsAPI for backward compatibility
-export const leadsAPI = {
-  ...contactsAPI,
-  getLeads: contactsAPI.getContacts,
-  getLead: contactsAPI.getContact,
-  createLead: contactsAPI.createContact,
-  updateLead: contactsAPI.updateContact,
-  deleteLead: contactsAPI.deleteContact,
-};
-
 // Internal Leads API (for Meta Ads and manual leads)
 export const internalLeadsAPI = {
   getLeads: (params) => api.get('/api/leads', { params }),
@@ -204,6 +194,17 @@ export const internalLeadsAPI = {
   assignLead: (id, data) => api.put(`/api/leads/${id}/assign`, data),
   importLeads: (data) => api.post('/api/leads/import', data),
   getStats: () => api.get('/api/leads/stats/overview'),
+};
+
+// Aliasing contactsAPI to leadsAPI for backward compatibility
+export const leadsAPI = {
+  ...internalLeadsAPI,
+  // Ensure backward compatibility if components call getContacts/getContact on leadsAPI
+  getContacts: internalLeadsAPI.getLeads,
+  getContact: internalLeadsAPI.getLead,
+  createContact: internalLeadsAPI.createLead,
+  updateContact: internalLeadsAPI.updateLead,
+  deleteContact: internalLeadsAPI.deleteLead,
 };
 
 

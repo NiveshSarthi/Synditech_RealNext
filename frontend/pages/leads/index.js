@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import Layout from '../../components/Layout';
 import { useAuth } from '../../contexts/AuthContext';
-import { contactsAPI } from '../../utils/api';
+import { leadsAPI } from '../../utils/api';
 import toast from 'react-hot-toast';
 import {
   PlusIcon,
@@ -140,10 +140,10 @@ export default function Leads() {
         tag: statusFilter // V1 doc uses 'tag' for filtering
       };
 
-      const response = await contactsAPI.getContacts(params);
+      const response = await leadsAPI.getLeads(params);
       const data = response.data;
-      setLeads(data.contacts || []);
-      setTotalPages(data.pages || Math.ceil((data.total || 0) / 20));
+      setLeads(data.data || []);
+      setTotalPages(data.pagination?.totalPages || Math.ceil((data.total || 0) / 20));
     } catch (error) {
       console.error('Failed to fetch leads:', error);
       // Fallback data for demo if API fails

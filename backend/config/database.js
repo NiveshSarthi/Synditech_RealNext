@@ -17,7 +17,10 @@ const sequelize = new Sequelize(
             idle: 10000
         },
         dialectOptions: {
-            ssl: false, // Set to true if using SSL
+            ssl: process.env.DB_SSL === 'true' ? {
+                require: true,
+                rejectUnauthorized: false // Often needed for self-signed certs in managed DBs
+            } : false,
             connectTimeout: 60000
         },
         define: {
