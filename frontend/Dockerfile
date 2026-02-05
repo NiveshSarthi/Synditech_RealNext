@@ -47,9 +47,9 @@ RUN npm run build --verbose
 
 # Arrange files for standalone mode in the same stage
 RUN mkdir -p .next/standalone/public && \
-    cp -r public/* .next/standalone/public/ && \
+    ([ -d "public" ] && cp -r public/* .next/standalone/public/ || true) && \
     mkdir -p .next/standalone/.next/static && \
-    cp -r .next/static/* .next/standalone/.next/static/
+    ([ -d ".next/static" ] && cp -r .next/static/* .next/standalone/.next/static/ || true)
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
