@@ -25,6 +25,6 @@ services:
     environment:
       - NODE_ENV=production
       # This behaves as the public URL for client-side requests
-      - NEXT_PUBLIC_API_URL=http://localhost:5000
+      - NEXT_PUBLIC_API_URL=https://r.niveshsarthi.com
     depends_on:
       - backend
