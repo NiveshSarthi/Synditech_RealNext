@@ -4,9 +4,9 @@
 echo "Starting Backend on port 5050..."
 cd /app/backend && npm start &
 
-# Start frontend
+# Start frontend (standalone mode)
 echo "Starting Frontend on port 3030..."
-cd /app/frontend && npm start &
+cd /app/frontend && node server.js &
 
 # Wait for any process to exit
 wait -n

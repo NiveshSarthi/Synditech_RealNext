@@ -17,10 +17,10 @@ COPY frontend/ ./
 RUN npm run build
 
 # Prepare final standalone layout
-RUN mkdir -p .next/standalone/public && \
-    ([ -d "public" ] && cp -r public/* .next/standalone/public/ || true) && \
-    mkdir -p .next/standalone/.next/static && \
-    ([ -d ".next/static" ] && cp -r .next/static/* .next/standalone/.next/static/ || true)
+# Next.js standalone build puts everything in .next/standalone
+# We need to manually copy public and static folders into it if they exist
+RUN if [ -d "public" ]; then cp -r public .next/standalone/; fi && \
+    if [ -d ".next/static" ]; then mkdir -p .next/standalone/.next && cp -r .next/static .next/standalone/.next/; fi
 
 # Final Stage
 FROM node:18-bullseye-slim
