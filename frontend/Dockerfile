@@ -22,10 +22,14 @@ ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-${SERVICE_URL_BACKEND:-http://loc
 ENV NODE_ENV=${NODE_ENV:-production}
 
 # Install dependencies directly in builder stage
-# Force fresh resolution for Linux by removing lockfile
 COPY package*.json ./
+# Delete lockfile to force Linux resolution
 RUN rm -f package-lock.json
+# Clean cache to avoid corrupted downloads
+RUN npm cache clean --force
 RUN npm install
+# Explicitly install SWC binary for Linux to prevent silent compiler crashes
+RUN npm install --no-save @next/swc-linux-x64-gnu
 RUN npm install sharp
 
 COPY . .
