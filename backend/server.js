@@ -66,7 +66,7 @@ app.use((req, res, next) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
     return;
   }
-  
+
   // Otherwise, if it's an API request or asset that wasn't found
   res.status(404).json({
     success: false,
@@ -96,7 +96,7 @@ const startServer = async () => {
       logger.info('Database sync skipped. Use migrations or set SYNC_DB=true');
     }
 
-    app.listen(PORT, () => {
+    app.listen(PORT, '0.0.0.0', () => {
       logger.info(`Server running on port ${PORT} in ${process.env.NODE_ENV} mode`);
     });
   } catch (error) {
