@@ -5,7 +5,7 @@ WORKDIR /app
 # Install dependencies
 # Install dependencies
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm install --production
 
 # Copy source code
 COPY --chown=node:node . .
