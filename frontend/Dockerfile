@@ -1,12 +1,9 @@
-FROM node:18-alpine AS dependencies
+FROM node:18-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 # Force development environment for install to include devDependencies
 RUN NODE_ENV=development npm ci
 
-FROM node:18-alpine AS builder
-WORKDIR /app
-COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
 
 # Accept build arguments
