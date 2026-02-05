@@ -26,5 +26,5 @@ ENV HOSTNAME "0.0.0.0"
 
 EXPOSE 3000
 
-# Use standard start command for reliability in single-stage
-CMD ["npm", "start"]
+# Use standalone server (required for output: standalone)
+CMD ["node", ".next/standalone/server.js"]
