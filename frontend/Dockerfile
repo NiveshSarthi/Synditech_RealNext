@@ -1,4 +1,4 @@
-FROM node:18-alpine AS deps
+FROM node:18-alpine AS dependencies
 WORKDIR /app
 COPY package*.json ./
 # Install ALL dependencies (including devDependencies) needed for build
@@ -20,7 +20,7 @@ ARG PORT
 ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 ENV NODE_ENV=${NODE_ENV:-production}
 
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
 
 # Disable telemetry during build
