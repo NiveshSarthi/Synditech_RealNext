@@ -22,8 +22,9 @@ ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-${SERVICE_URL_BACKEND:-http://loc
 ENV NODE_ENV=${NODE_ENV:-production}
 
 # Install dependencies directly in builder stage
+# Use npm install instead of ci to fix cross-platform lockfile issues (Windows -> Linux)
 COPY package*.json ./
-RUN npm ci
+RUN npm install
 
 COPY . .
 
@@ -33,7 +34,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 ENV NEXT_IGNORE_ESLINT_BUILD_ERRORS=1
 ENV NEXT_IGNORE_TYPE_CHECK_ERRORS=1
 
-RUN npm run build
+RUN npm run build --verbose
 
 # Arrange files for standalone mode in the same stage
 RUN mkdir -p .next/standalone/public && \
