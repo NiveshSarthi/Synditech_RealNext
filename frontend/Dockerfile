@@ -1,15 +1,15 @@
-FROM node:18-alpine AS deps
+FROM node:18-alpine AS dependencies
 WORKDIR /app
 COPY package*.json ./
-# Force development environment for install to include devDependencies (tailwind, etc)
+# Force development environment for install to include devDependencies
 RUN NODE_ENV=development npm ci
 
 FROM node:18-alpine AS builder
 WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
+COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
 
-# Aceept build arguments
+# Accept build arguments
 ARG NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
