@@ -1,6 +1,9 @@
-FROM node:18-alpine AS builder
+FROM node:18-alpine
+
 WORKDIR /app
+
 COPY package*.json ./
+
 # Force development environment for install to include devDependencies
 RUN NODE_ENV=development npm ci
 
@@ -12,25 +15,16 @@ ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 # Disable telemetry during build
 ENV NEXT_TELEMETRY_DISABLED 1
+
+# Build the application
 RUN npm run build
 
-FROM node:18-alpine AS runner
-WORKDIR /app
+# Set production environment
 ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
-
-RUN addgroup --system --gid 1001 nodejs
-RUN adduser --system --uid 1001 nextjs
-
-# Copy necessary files
-COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
-
-USER nextjs
-
-EXPOSE 3000
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
-CMD ["node", "server.js"]
+EXPOSE 3000
+
+# Use standard start command for reliability in single-stage
+CMD ["npm", "start"]
