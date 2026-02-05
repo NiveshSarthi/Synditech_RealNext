@@ -19,6 +19,10 @@ ENV NEXT_TELEMETRY_DISABLED 1
 # Build the application
 RUN npm run build
 
+# Copy static assets to standalone directory (required for standalone output)
+RUN cp -r .next/static .next/standalone/.next/static
+RUN cp -r public .next/standalone/public
+
 # Set production environment
 ENV NODE_ENV production
 ENV PORT 3000
