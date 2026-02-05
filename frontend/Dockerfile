@@ -17,7 +17,8 @@ ARG SERVICE_FQDN_FRONTEND
 ARG PORT
 
 # Convert ARGs to ENV so they're available during build
-ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:5000}
+# Fallback priority: NEXT_PUBLIC_API_URL -> SERVICE_URL_BACKEND -> localhost
+ENV NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-${SERVICE_URL_BACKEND:-http://localhost:5000}}
 ENV NODE_ENV=${NODE_ENV:-production}
 
 # Install dependencies directly in builder stage
