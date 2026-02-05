@@ -15,12 +15,12 @@ export default function Document() {
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
 
         {/* Meta tags */}
-        <meta name="description" content="RealNex CRM - Revolutionizing real estate marketing through intelligent WhatsApp automation" />
+        <meta name="description" content="RealNext CRM - Revolutionizing real estate marketing through intelligent WhatsApp automation" />
         <meta name="keywords" content="real estate CRM, WhatsApp automation, property management, lead generation" />
-        <meta name="author" content="RealNex CRM" />
+        <meta name="author" content="RealNext CRM" />
 
         {/* Open Graph meta tags */}
-        <meta property="og:title" content="RealNex CRM - Real Estate WhatsApp Automation" />
+        <meta property="og:title" content="RealNext CRM - Real Estate WhatsApp Automation" />
         <meta property="og:description" content="Automate your real estate business with intelligent WhatsApp CRM and AI-powered lead management" />
         <meta property="og:image" content="/og-image.png" />
         <meta property="og:url" content="https://realnex.com" />
@@ -28,7 +28,7 @@ export default function Document() {
 
         {/* Twitter Card meta tags */}
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content="RealNex CRM - Real Estate WhatsApp Automation" />
+        <meta name="twitter:title" content="RealNext CRM - Real Estate WhatsApp Automation" />
         <meta name="twitter:description" content="Automate your real estate business with intelligent WhatsApp CRM and AI-powered lead management" />
         <meta name="twitter:image" content="/og-image.png" />
 

@@ -101,7 +101,7 @@ export default function Layout({ children }) {
   } else {
     // For tenant users, filter navigation based on role
     const userRole = user?.context?.tenantRole || 'user';
-    
+
     // Only show Team section for admin and manager roles
     if (userRole !== 'admin' && userRole !== 'manager') {
       navigation = userNavigation.filter(item => item.name !== 'Team');
@@ -234,9 +234,12 @@ export default function Layout({ children }) {
         />
         <div className="fixed inset-y-0 left-0 w-64 bg-card border-r border-border shadow-2xl transform transition-transform duration-300 ease-in-out">
           <div className="flex items-center justify-between p-6 border-b border-border/50">
-            <span className="text-2xl font-bold font-display tracking-tight text-white flex items-center">
-              RealNe<span className="text-3xl text-primary -ml-0.5">X</span>
-            </span>
+            <div className="flex flex-col leading-none">
+              <span className="text-2xl font-bold font-display tracking-tight text-white flex items-center">
+                RealNex<span className="text-4xl text-primary -ml-0.5">T</span>
+              </span>
+              <span className="text-[10px] text-gray-500 font-medium tracking-wide uppercase -mt-1 ml-0.5">By Syndicate</span>
+            </div>
             <button
               onClick={() => setSidebarOpen(false)}
               className="ml-1 flex items-center justify-center h-10 w-10 rounded-full focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
@@ -264,9 +267,12 @@ export default function Layout({ children }) {
         {/* Sidebar Header */}
         <div className="flex items-center h-16 flex-shrink-0 px-4 border-b border-border/50 bg-card/50 backdrop-blur-md">
           {!isCollapsed ? (
-            <span className="text-xl font-bold font-display tracking-tight text-white animate-fade-in truncate flex items-center">
-              RealNe<span className="text-2xl text-primary -ml-0.5">X</span>
-            </span>
+            <div className="flex flex-col leading-none">
+              <span className="text-xl font-bold font-display tracking-tight text-white animate-fade-in truncate flex items-center">
+                RealNex<span className="text-3xl text-primary -ml-0.5">T</span>
+              </span>
+              <span className="text-[10px] text-gray-500 font-medium tracking-wide uppercase -mt-1 ml-0.5 animate-fade-in">By Syndicate</span>
+            </div>
           ) : (
             <span className="text-xl font-bold font-display text-primary mx-auto">R</span>
           )}

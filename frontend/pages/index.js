@@ -29,10 +29,13 @@ export default function Home() {
             <div className="h-10 w-10 bg-gradient-to-br from-primary to-orange-600 rounded-xl flex items-center justify-center shadow-glow-sm">
               <ChatBubbleLeftRightIcon className="h-6 w-6 text-black" />
             </div>
-            <span className="text-xl font-bold font-display tracking-tight text-white flex items-center">
-              RealNe<span className="text-2xl text-primary -ml-0.5">X</span>
-              <span className="text-gray-500 text-xs ml-2 font-normal">CRM</span>
-            </span>
+            <div className="flex flex-col leading-none">
+              <span className="text-xl font-bold font-display tracking-tight text-white flex items-center">
+                RealNex<span className="text-3xl text-primary -ml-0.5">T</span>
+                <span className="text-gray-500 text-xs ml-2 font-normal self-start mt-1">CRM</span>
+              </span>
+              <span className="text-[10px] text-gray-500 font-medium tracking-wide uppercase -mt-1 ml-0.5">By Syndicate</span>
+            </div>
           </div>
           <div className="hidden md:flex items-center space-x-8 text-sm font-medium">
             <a href="#features" className="text-gray-400 hover:text-white transition-colors">Features</a>
@@ -176,9 +179,12 @@ export default function Home() {
             <div className="h-6 w-6 bg-primary rounded-md flex items-center justify-center">
               <ChatBubbleLeftRightIcon className="h-4 w-4 text-black" />
             </div>
-            <span className="font-bold text-white tracking-tight flex items-center">
-              RealNe<span className="text-lg text-primary -ml-0.5">X</span>
-            </span>
+            <div className="flex flex-col leading-none">
+              <span className="font-bold text-white tracking-tight flex items-center">
+                RealNex<span className="text-xl text-primary -ml-0.5">T</span>
+              </span>
+              <span className="text-[10px] text-gray-500 font-medium tracking-wide uppercase -mt-0.5">By Syndicate</span>
+            </div>
           </div>
           <div className="flex gap-8 text-gray-400">
             <a href="#" className="hover:text-primary">Privacy</a>
@@ -186,7 +192,7 @@ export default function Home() {
             <a href="#" className="hover:text-primary">Contact</a>
           </div>
           <div className="mt-4 md:mt-0 text-gray-500">
-            &copy; 2026 RealNex CRM.
+            &copy; 2026 RealNext CRM.
           </div>
         </div>
       </footer>
