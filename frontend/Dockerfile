@@ -1,4 +1,4 @@
-FROM node:18-alpine AS builder
+FROM node:18-alpine
 WORKDIR /app
 
 # Declare build arguments that Coolify will pass
@@ -28,18 +28,14 @@ ENV NEXT_IGNORE_TYPE_CHECK_ERRORS=1
 
 RUN npm run build
 
-FROM node:18-alpine AS runner
-WORKDIR /app
-ENV NODE_ENV production
-ENV NEXT_TELEMETRY_DISABLED 1
+# Arrange files for standalone mode in the same stage
+RUN mkdir -p .next/standalone/public && \
+    cp -r public/* .next/standalone/public/ && \
+    mkdir -p .next/standalone/.next/static && \
+    cp -r .next/static/* .next/standalone/.next/static/
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
-
-# Copy necessary files
-COPY --from=builder /app/public ./public
-COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
-COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 
 USER nextjs
 
@@ -47,4 +43,4 @@ EXPOSE 3000
 ENV PORT 3000
 ENV HOSTNAME "0.0.0.0"
 
-CMD ["node", "server.js"]
+CMD ["node", ".next/standalone/server.js"]
