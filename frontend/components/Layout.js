@@ -57,6 +57,14 @@ const userNavigation = [
   },
   { name: 'Drip Matrix', href: '/drip-sequences', icon: QueueListIcon },
   { name: 'Analytics', href: '/analytics', icon: ChartBarIcon },
+  {
+    name: 'Team',
+    icon: UserGroupIcon,
+    children: [
+      { name: 'Members', href: '/team', icon: UsersIcon },
+      { name: 'Roles', href: '/team/roles', icon: Cog6ToothIcon },
+    ]
+  },
   { name: 'Payments', href: '/payments', icon: CreditCardIcon },
   { name: 'Settings', href: '/settings', icon: Cog6ToothIcon },
 ];
@@ -71,13 +79,34 @@ const adminNavigation = [
   { name: 'Settings', href: '/admin/settings', icon: Cog6ToothIcon },
 ];
 
+const partnerNavigation = [
+  { name: 'Dashboard', href: '/partner', icon: HomeIcon },
+  { name: 'Tenants', href: '/partner/tenants', icon: BuildingStorefrontIcon },
+  { name: 'Analytics', href: '/partner/analytics', icon: ChartBarIcon },
+  { name: 'Settings', href: '/partner/settings', icon: Cog6ToothIcon },
+];
+
 export default function Layout({ children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState({});
   const { user, router } = useAuth();
 
-  const navigation = user?.is_super_admin ? adminNavigation : userNavigation;
+  let navigation = userNavigation; // Default for Tenant Users
+
+  if (user?.is_super_admin) {
+    navigation = adminNavigation;
+  } else if (user?.context?.partner) {
+    navigation = partnerNavigation;
+  } else {
+    // For tenant users, filter navigation based on role
+    const userRole = user?.context?.tenantRole || 'user';
+    
+    // Only show Team section for admin and manager roles
+    if (userRole !== 'admin' && userRole !== 'manager') {
+      navigation = userNavigation.filter(item => item.name !== 'Team');
+    }
+  }
 
   // Auto-expand menus that have an active child
   useEffect(() => {

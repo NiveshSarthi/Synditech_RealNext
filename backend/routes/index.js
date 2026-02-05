@@ -16,6 +16,10 @@ router.use('/partner', require('./partner'));
 // Tenant management routes
 router.use('/tenant', require('./tenant'));
 
+// Team and role management routes
+router.use('/team', require('./team'));
+router.use('/roles', require('./roles'));
+
 // Feature module routes
 router.use('/leads', require('./leads'));
 router.use('/campaigns', require('./campaigns'));

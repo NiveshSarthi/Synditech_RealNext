@@ -32,6 +32,8 @@ export default function Login() {
         toast.success('Login successful!');
         if (result.user?.is_super_admin) {
           router.push('/admin');
+        } else if (result.user?.context?.partner) {
+          router.push('/partner');
         } else {
           router.push('/dashboard');
         }

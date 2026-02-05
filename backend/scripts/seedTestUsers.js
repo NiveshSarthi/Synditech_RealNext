@@ -22,9 +22,8 @@ async function seedTestUsers() {
             throw new Error('Free Trial plan not found. Run seedPlans.js first!');
         }
 
-        // Hash password for all test users
+        // All test users use this password (will be hashed by User model hooks)
         const password = 'Test123!';
-        const hashedPassword = await bcrypt.hash(password, 10);
 
         // ============================================
         // 1. SUPER ADMIN (Already exists from migration)
@@ -61,7 +60,7 @@ async function seedTestUsers() {
             defaults: {
                 email: 'partner-admin@acme.com',
                 name: 'Partner Admin',
-                password_hash: hashedPassword,
+                password_hash: password,
                 status: 'active',
                 is_super_admin: false
             }
@@ -111,7 +110,7 @@ async function seedTestUsers() {
             defaults: {
                 email: 'tenant-admin@testcompany.com',
                 name: 'Tenant Admin',
-                password_hash: hashedPassword,
+                password_hash: password,
                 phone: '+919876543210',
                 status: 'active',
                 is_super_admin: false
@@ -164,7 +163,7 @@ async function seedTestUsers() {
             defaults: {
                 email: 'tenant-user@testcompany.com',
                 name: 'Tenant User',
-                password_hash: hashedPassword,
+                password_hash: password,
                 phone: '+919876543211',
                 status: 'active',
                 is_super_admin: false

@@ -58,7 +58,9 @@ class AuthService {
             refresh_token: refreshToken,
             context: {
                 tenant: context.tenant,
+                tenantRole: context.tenantRole,
                 partner: context.partner,
+                partnerRole: context.partnerRole,
                 subscription: context.subscription ? {
                     plan_code: context.planCode,
                     status: context.subscription.status,
@@ -284,7 +286,7 @@ class AuthService {
         // Get partner membership
         const partnerUser = await PartnerUser.findOne({
             where: { user_id: user.id },
-            include: [{ model: Partner, where: { status: 'active' } }]
+            include: [{ model: Partner, as: 'Partner', where: { status: 'active' } }]
         });
 
         if (partnerUser?.Partner) {

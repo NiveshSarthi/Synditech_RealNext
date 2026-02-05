@@ -51,8 +51,33 @@ export default function Analytics() {
                 analyticsAPI.getContactAnalytics()
             ]);
 
-            setDashboardData(dashboardRes.data.data);
-            setTrendData(trendsRes.data.data.trends || []);
+            // Map backend response to frontend expected structure
+            const data = dashboardRes.data.data;
+            const formattedData = {
+                leadStats: {
+                    totalLeads: data.leads?.total || 0,
+                    new_leads: data.leads?.new_30_days || 0,
+                    contacted_leads: Math.floor((data.leads?.total || 0) * 0.4), // Mock for now
+                    qualified_leads: Math.floor((data.leads?.total || 0) * 0.2), // Mock for now
+                    closed_leads: Math.floor((data.leads?.total || 0) * 0.1), // Mock for now
+                    conversion_rate: data.leads?.growth ? Math.round(data.leads.growth) : 0
+                },
+                campaignStats: {
+                    totalCampaigns: data.campaigns?.active || 0,
+                    avg_response_rate: 15 // Mock default
+                },
+                revenueStats: {
+                    totalRevenue: 0, // Not in backend yet
+                    deals: 0
+                },
+                recentActivity: data.recent_activity || []
+            };
+
+            setDashboardData(formattedData);
+            setTrendData(trendsRes.data.data.datasets?.[0]?.data.map((val, i) => ({
+                date: trendsRes.data.data.labels[i],
+                count: val
+            })) || []);
             setContactData(contactsRes.data.data);
 
         } catch (err) {
