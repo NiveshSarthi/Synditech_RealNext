@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Force development environment for install to include devDependencies
-RUN NODE_ENV=development npm ci
+RUN NODE_ENV=development npm install
 
 COPY . .
 
