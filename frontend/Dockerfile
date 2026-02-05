@@ -20,8 +20,8 @@ ENV NEXT_TELEMETRY_DISABLED 1
 RUN npm run build
 
 # Copy static assets to standalone directory (required for standalone output)
-RUN cp -r .next/static .next/standalone/.next/static
-RUN cp -r public .next/standalone/public
+RUN cp -r .next/static .next/standalone/.next/static && \
+    if [ -d "public" ]; then cp -r public .next/standalone/public; fi
 
 # Set production environment
 ENV NODE_ENV production
