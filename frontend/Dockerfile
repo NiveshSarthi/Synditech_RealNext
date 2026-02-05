@@ -1,7 +1,8 @@
 FROM node:18-alpine AS deps
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci
+# Force development environment for install to include devDependencies (tailwind, etc)
+RUN NODE_ENV=development npm ci
 
 FROM node:18-alpine AS builder
 WORKDIR /app
