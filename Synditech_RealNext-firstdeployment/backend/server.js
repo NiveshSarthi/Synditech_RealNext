@@ -19,23 +19,17 @@ app.set('trust proxy', 1);
 app.use(helmet());
 
 // CORS configuration
-const allowedOrigins = [
-  process.env.FRONTEND_URL, 
-  'http://localhost:3000', 
-  'http://localhost:3030'
-].filter(Boolean);
-
 app.use(cors({
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl requests)
+    // Permissive CORS for debugging/deployment issues
+    // Just reflect the origin if it exists
     if (!origin) return callback(null, true);
     
-    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes(origin.replace(/\/$/, ''))) {
-      callback(null, true);
-    } else {
-      console.log('BLOCKED A CORS REQUEST FROM:', origin);
-      callback(new Error('Not allowed by CORS'));
-    }
+    // Log the origin for debugging purposes
+    console.log('CORS REQUEST FROM:', origin);
+    
+    // Allow everything for now to rule out CORS
+    callback(null, true);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
