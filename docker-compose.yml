@@ -44,9 +44,3 @@ services:
 networks:
   coolify:
     external: true
-    networks:
-      - coolify
-
-networks:
-  coolify:
-    external: true
