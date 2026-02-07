@@ -40,6 +40,9 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Tenant-ID', 'X-Partner-ID']
 }));
 
+// Enable pre-flight requests for all routes
+app.options('*', cors());
+
 // Compression
 app.use(compression());
 
