@@ -20,7 +20,6 @@ services:
       - SUPER_ADMIN_EMAIL=admin@realnext.com
       - SUPER_ADMIN_PASSWORD=realnextAdmin2024!debug
     restart: unless-stopped
-    restart: unless-stopped
 
   frontend:
     build:
