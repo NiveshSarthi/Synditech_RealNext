@@ -20,8 +20,7 @@ services:
       - SUPER_ADMIN_EMAIL=admin@realnext.com
       - SUPER_ADMIN_PASSWORD=realnextAdmin2024!debug
     restart: unless-stopped
-    networks:
-      - app-network
+    restart: unless-stopped
 
   frontend:
     build:
@@ -39,9 +38,3 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
