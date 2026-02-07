@@ -1,6 +1,13 @@
 import axios from 'axios';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+let API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+
+// Auto-upgrade to HTTPS if the page is loaded over HTTPS
+if (typeof window !== 'undefined' && window.location.protocol === 'https:' && API_BASE_URL.startsWith('http:')) {
+  API_BASE_URL = API_BASE_URL.replace('http:', 'https:');
+  console.log('🔒 Upgraded API URL to HTTPS:', API_BASE_URL);
+}
+
 const WA_API_BASE_URL = `${API_BASE_URL}/api/external-proxy`;
 const WA_CREDENTIALS = {
   email: 'Syndicate@niveshsarthi.com',
