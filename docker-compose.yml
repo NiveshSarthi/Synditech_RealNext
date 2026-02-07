@@ -21,6 +21,8 @@ services:
       - SUPER_ADMIN_PASSWORD=realnextAdmin2024!debug
       - SYNC_DB=true
     restart: unless-stopped
+    networks:
+      - coolify
 
   frontend:
     build:
