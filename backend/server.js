@@ -126,6 +126,42 @@ const startServer = async () => {
     if (process.env.SYNC_DB === 'true') {
       await sequelize.sync({ force: false, alter: false });
       logger.info('Database synchronized');
+
+      // Seed Super Admin if defined
+      if (process.env.SUPER_ADMIN_EMAIL && process.env.SUPER_ADMIN_PASSWORD) {
+        const { User, Tenant, TenantUser } = require('./models');
+        const adminEmail = process.env.SUPER_ADMIN_EMAIL;
+        const adminPass = process.env.SUPER_ADMIN_PASSWORD;
+
+        const existingAdmin = await User.findOne({ where: { email: adminEmail } });
+        if (!existingAdmin) {
+          logger.info('Seeding Super Admin...');
+          const user = await User.create({
+            email: adminEmail,
+            password_hash: adminPass, // Hook will hash this
+            name: 'Super Admin',
+            status: 'active',
+            is_super_admin: true,
+            email_verified: true
+          });
+
+          // Create Admin Tenant
+          const tenant = await Tenant.create({
+            name: 'RealNext Admin',
+            email: adminEmail,
+            status: 'active',
+            environment: 'production'
+          });
+
+          await TenantUser.create({
+            tenant_id: tenant.id,
+            user_id: user.id,
+            role: 'admin',
+            is_owner: true
+          });
+          logger.info('Super Admin seeded successfully');
+        }
+      }
     } else {
       logger.info('Database sync skipped. Use migrations or set SYNC_DB=true');
     }
