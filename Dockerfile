@@ -27,7 +27,6 @@ COPY --from=backend-deps /app/backend/node_modules /app/backend/node_modules
 COPY --from=frontend-builder /app/frontend/.next/standalone /app/frontend/
 COPY --from=frontend-builder /app/frontend/.next/static /app/frontend/.next/static
 
-COPY .env /app/.env
 COPY start-services.sh /app/start-services.sh
 RUN chmod +x /app/start-services.sh
 
