@@ -7,9 +7,18 @@ services:
       dockerfile: Dockerfile
     container_name: realnext-backend
     ports:
-      - "5001:5000"
-    env_file:
-      - ./backend/.env
+      - "5001:5001"
+    environment:
+      - PORT=5001
+      - DB_HOST=72.61.248.175
+      - DB_PORT=5443
+      - DB_NAME=postgres
+      - DB_USER=postgres
+      - DB_PASSWORD=rr5inCRtzjDCFOQUkv2vrE0WDlnAWhSGhYGq30mxJWeLJYCG9oMVL0L39UjR2FTt
+      - FRONTEND_URL=https://t008wko0ww888wwgcwwskw0g.72.61.248.175.sslip.io
+      - WHATSAPP_API_URL=https://ckk4swcsssos844w0ccos4og.72.61.248.175.sslip.io
+      - SUPER_ADMIN_EMAIL=admin@realnext.com
+      - SUPER_ADMIN_PASSWORD=realnextAdmin2024!debug
     restart: unless-stopped
     networks:
       - app-network
@@ -19,12 +28,12 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: http://localhost:5001
+        NEXT_PUBLIC_API_URL: https://ro0g0g4go04gg080wsgkwsss.72.61.248.175.sslip.io
     container_name: realnext-frontend
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:5001
+      - NEXT_PUBLIC_API_URL=https://ro0g0g4go04gg080wsgkwsss.72.61.248.175.sslip.io
       - NODE_ENV=production
       - PORT=3000
     restart: unless-stopped
