@@ -19,7 +19,7 @@ services:
       - WHATSAPP_API_URL=https://ckk4swcsssos844w0ccos4og.72.61.248.175.sslip.io
       - SUPER_ADMIN_EMAIL=admin@realnext.com
       - SUPER_ADMIN_PASSWORD=realnextAdmin2024!debug
-      - SYNC_DB=true
+      - SYNC_DB=false
     restart: unless-stopped
     networks:
       - coolify
