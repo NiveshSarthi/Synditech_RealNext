@@ -38,3 +38,15 @@ services:
     restart: unless-stopped
     depends_on:
       - backend
+    networks:
+      - coolify
+
+networks:
+  coolify:
+    external: true
+    networks:
+      - coolify
+
+networks:
+  coolify:
+    external: true
