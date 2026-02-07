@@ -130,23 +130,23 @@ const startServer = async () => {
 
       // Seed Super Admin if defined
       if (process.env.SUPER_ADMIN_EMAIL && process.env.SUPER_ADMIN_PASSWORD) {
-        const { User, Tenant, TenantUser } = require('./models');
+        const { User, Tenant, TenantUser, Partner, PartnerUser } = require('./models');
         const adminEmail = process.env.SUPER_ADMIN_EMAIL;
         const adminPass = process.env.SUPER_ADMIN_PASSWORD;
 
+        // 1. Super Admin
         const existingAdmin = await User.findOne({ where: { email: adminEmail } });
         if (!existingAdmin) {
           logger.info('Seeding Super Admin...');
           const user = await User.create({
             email: adminEmail,
-            password_hash: adminPass, // Hook will hash this
+            password_hash: adminPass,
             name: 'Super Admin',
             status: 'active',
             is_super_admin: true,
             email_verified: true
           });
 
-          // Create Admin Tenant
           const tenant = await Tenant.create({
             name: 'RealNext Admin',
             email: adminEmail,
@@ -161,6 +161,93 @@ const startServer = async () => {
             is_owner: true
           });
           logger.info('Super Admin seeded successfully');
+        }
+
+        // 2. Partner Admin
+        const partnerEmail = 'partner-admin@acme.com';
+        const partnerPass = 'Test123!';
+        const existingPartner = await User.findOne({ where: { email: partnerEmail } });
+        if (!existingPartner) {
+          logger.info('Seeding Partner Admin...');
+          const pUser = await User.create({
+            email: partnerEmail,
+            password_hash: partnerPass,
+            name: 'Partner Admin',
+            status: 'active',
+            email_verified: true
+          });
+
+          const partner = await Partner.create({
+            name: 'Acme Resellers',
+            email: partnerEmail,
+            status: 'active',
+            commission_rate: 15.00
+          });
+
+          await PartnerUser.create({
+            partner_id: partner.id,
+            user_id: pUser.id,
+            role: 'admin',
+            is_owner: true
+          });
+          logger.info('Partner Admin seeded');
+        }
+
+        // 3. Tenant Admin
+        const tenantRxEmail = 'tenant-admin@testcompany.com';
+        const tenantRxPass = 'Test123!';
+        const existingTenantRx = await User.findOne({ where: { email: tenantRxEmail } });
+        if (!existingTenantRx) {
+          logger.info('Seeding Tenant Admin...');
+          const tUser = await User.create({
+            email: tenantRxEmail,
+            password_hash: tenantRxPass, // Hook hashes this
+            name: 'Tenant Admin',
+            status: 'active',
+            email_verified: true
+          });
+
+          // Calculate trial end (14 days)
+          const trialEnd = new Date();
+          trialEnd.setDate(trialEnd.getDate() + 14);
+
+          const tenantCompany = await Tenant.create({
+            name: 'Test Company Ltd',
+            email: tenantRxEmail,
+            status: 'active',
+            plan_type: 'trial',
+            trial_ends_at: trialEnd
+          });
+
+          await TenantUser.create({
+            tenant_id: tenantCompany.id,
+            user_id: tUser.id,
+            role: 'admin',
+            is_owner: true
+          });
+          logger.info('Tenant Admin seeded');
+
+          // 4. Tenant User (Regular) - belongs to same tenant
+          const regUserEmail = 'tenant-user@testcompany.com';
+          const existingRegUser = await User.findOne({ where: { email: regUserEmail } });
+          if (!existingRegUser) {
+            logger.info('Seeding Regular Tenant User...');
+            const rUser = await User.create({
+              email: regUserEmail,
+              password_hash: 'Test123!',
+              name: 'Regular User',
+              status: 'active',
+              email_verified: true
+            });
+
+            await TenantUser.create({
+              tenant_id: tenantCompany.id,
+              user_id: rUser.id,
+              role: 'user', // Not admin
+              is_owner: false
+            });
+            logger.info('Regular Tenant User seeded');
+          }
         }
       }
     } else {
