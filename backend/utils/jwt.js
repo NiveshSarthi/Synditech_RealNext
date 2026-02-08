@@ -12,10 +12,18 @@ const logger = require('../config/logger');
  * Generate access token
  */
 const generateAccessToken = (payload) => {
-    return jwt.sign(payload, jwtConfig.accessSecret, {
-        expiresIn: jwtConfig.accessExpiry,
-        issuer: 'multitenant-saas'
-    });
+    console.log("TRACE JWT: specific sign start");
+    try {
+        const token = jwt.sign(payload, jwtConfig.accessSecret, {
+            expiresIn: jwtConfig.accessExpiry,
+            issuer: 'multitenant-saas'
+        });
+        console.log("TRACE JWT: specific sign success");
+        return token;
+    } catch (err) {
+        console.error("TRACE JWT: sign ERROR", err);
+        throw err;
+    }
 };
 
 /**
