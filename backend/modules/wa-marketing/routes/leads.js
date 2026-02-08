@@ -108,6 +108,49 @@ router.post('/',
     }
 );
 
+
+/**
+ * @route GET /api/leads/stats
+ * @desc Get lead statistics
+ * @access Tenant User
+ */
+router.get('/stats/overview', requireFeature('leads'), async (req, res, next) => {
+    try {
+        const { fn, col } = require('sequelize');
+
+        const byStatus = await Lead.findAll({
+            where: { tenant_id: req.tenant.id },
+            attributes: ['status', [fn('COUNT', col('id')), 'count']],
+            group: ['status'],
+            raw: true
+        });
+
+        const bySource = await Lead.findAll({
+            where: { tenant_id: req.tenant.id },
+            attributes: ['source', [fn('COUNT', col('id')), 'count']],
+            group: ['source'],
+            raw: true
+        });
+
+        const avgScore = await Lead.findAll({
+            where: { tenant_id: req.tenant.id, ai_score: { [Op.ne]: null } },
+            attributes: [[fn('AVG', col('ai_score')), 'average']],
+            raw: true
+        });
+
+        res.json({
+            success: true,
+            data: {
+                by_status: byStatus,
+                by_source: bySource,
+                average_ai_score: parseFloat(avgScore[0]?.average) || 0
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
 /**
  * @route GET /api/leads/:id
  * @desc Get lead details
@@ -317,41 +360,7 @@ router.post('/import',
  * @desc Get lead statistics
  * @access Tenant User
  */
-router.get('/stats/overview', requireFeature('leads'), async (req, res, next) => {
-    try {
-        const { fn, col } = require('sequelize');
 
-        const byStatus = await Lead.findAll({
-            where: { tenant_id: req.tenant.id },
-            attributes: ['status', [fn('COUNT', col('id')), 'count']],
-            group: ['status'],
-            raw: true
-        });
 
-        const bySource = await Lead.findAll({
-            where: { tenant_id: req.tenant.id },
-            attributes: ['source', [fn('COUNT', col('id')), 'count']],
-            group: ['source'],
-            raw: true
-        });
-
-        const avgScore = await Lead.findAll({
-            where: { tenant_id: req.tenant.id, ai_score: { [Op.ne]: null } },
-            attributes: [[fn('AVG', col('ai_score')), 'average']],
-            raw: true
-        });
-
-        res.json({
-            success: true,
-            data: {
-                by_status: byStatus,
-                by_source: bySource,
-                average_ai_score: parseFloat(avgScore[0]?.average) || 0
-            }
-        });
-    } catch (error) {
-        next(error);
-    }
-});
 
 module.exports = router;
