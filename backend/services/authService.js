@@ -51,23 +51,36 @@ class AuthService {
         console.log("TRACE 6: REACHED RETURN REAL");
 
         // Get user context (tenant/partner)
+        console.log("TRACE 7: Calling getUserContext");
         const context = await this.getUserContext(user);
+        console.log("TRACE 8: getUserContext done");
 
         // Generate tokens
+        console.log("TRACE 9: Building token payload");
         const tokenPayload = buildTokenPayload(user, context);
+        console.log("TRACE 10: Generating access token");
         const accessToken = generateAccessToken(tokenPayload);
+        console.log("TRACE 11: Generating refresh token");
         const refreshToken = await generateRefreshToken(
             user.id,
             req.get('User-Agent'),
             req.ip
         );
+        console.log("TRACE 12: Tokens generated");
 
         // Update last login
+        console.log("TRACE 13: Updating last_login_at");
         await user.update({ last_login_at: new Date() });
+        console.log("TRACE 14: User updated");
 
         // Log successful login
+        console.log("TRACE 15: Logging login history");
         await this.logLogin(user.id, 'password', true, req);
+        console.log("TRACE 16: Login history logged");
+
+        console.log("TRACE 17: Logging audit event");
         await logAuthEvent(req, 'login', true, user.id);
+        console.log("TRACE 18: Audit event logged. FINISHED.");
 
         return {
             user: user.toSafeJSON(),
