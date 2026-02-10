@@ -23,6 +23,7 @@ const allowedOrigins = [
   'http://localhost:3000',
   process.env.FRONTEND_URL,
   'https://test.niveshsarthi.com',
+  'https://realnext.in',
   'https://realnext.syndicate.niveshsarthi.com'
 ].filter(Boolean);
 
